@@ -1,6 +1,8 @@
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.views.generic import View
 from django.core.serializers.json import DjangoJSONEncoder
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 from jwt_auth.compat import json, smart_text
 from jwt_auth.forms import JSONWebTokenForm
@@ -10,6 +12,10 @@ class ObtainJSONWebToken(View):
     http_method_names = ['post']
     error_response_dict = {'errors': ['Improperly formatted request']}
     json_encoder_class = DjangoJSONEncoder
+    
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(ObtainJSONWebToken, self).dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         try:
